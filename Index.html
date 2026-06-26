@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGENAPE — Plataforma Nacional de Rastreabilidade Alimentar</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --v:#0D2B1F;--vm:#1B4332;--vc:#2D6A4F;--vl:#40916C;
+  --ouro:#D4A017;--ourol:#F0C040;
+  --marfim:#F8F5EF;--cinza:#4B5563;--cinzal:#9CA3AF;--branco:#FFFFFF;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--marfim);color:var(--cinza);overflow-x:hidden}
+.page{display:none}.page.active{display:block}
+
+/* NAV */
+nav{background:var(--v);padding:0 4rem;display:flex;justify-content:space-between;align-items:center;height:68px;position:sticky;top:0;z-index:200}
+.logo{font-family:'Playfair Display',serif;color:var(--branco);font-size:1.4rem;font-weight:700;letter-spacing:.08em;cursor:pointer}
+.logo span{color:var(--ouro)}
+.nav-links{display:flex;gap:0;list-style:none}
+.nav-links li a{color:rgba(255,255,255,.7);text-decoration:none;font-size:.8rem;font-weight:500;letter-spacing:.04em;padding:0 1rem;height:68px;display:flex;align-items:center;transition:all .2s;cursor:pointer;border-bottom:2px solid transparent}
+.nav-links li a:hover{color:var(--ourol);border-bottom-color:var(--ouro)}
+.nav-right{display:flex;gap:.75rem;align-items:center}
+.btn-login{color:rgba(255,255,255,.75);background:transparent;border:1px solid rgba(255,255,255,.25);padding:.45rem 1.1rem;border-radius:3px;font-size:.8rem;font-weight:500;cursor:pointer;transition:all .2s}
+.btn-login:hover{border-color:rgba(255,255,255,.6);color:var(--branco)}
+.btn-nav-cta{background:var(--ouro);color:var(--v);padding:.45rem 1.1rem;border-radius:3px;font-size:.8rem;font-weight:700;cursor:pointer;border:none;transition:all .2s}
+.btn-nav-cta:hover{background:var(--ourol)}
+
+/* HERO */
+.hero{background:var(--v);min-height:91vh;display:grid;grid-template-columns:1fr 400px;align-items:center;padding:4rem;gap:4rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;right:0;top:0;width:55%;height:100%;background:radial-gradient(ellipse at 70% 50%,rgba(45,106,79,.35) 0%,transparent 65%);pointer-events:none}
+.hero-content{position:relative;z-index:1}
+.eyebrow{display:inline-flex;align-items:center;gap:.5rem;background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.3);color:var(--ourol);font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:.35rem .9rem;border-radius:2px;margin-bottom:1.75rem}
+.eyebrow-dot{width:6px;height:6px;background:var(--ouro);border-radius:50%}
+.hero h1{font-family:'Playfair Display',serif;color:var(--branco);font-size:3.3rem;line-height:1.12;font-weight:700;margin-bottom:1.5rem}
+.hero h1 em{color:var(--ouro);font-style:normal;display:block}
+.hero-sub{color:rgba(255,255,255,.65);font-size:1rem;line-height:1.85;max-width:520px;margin-bottom:2.5rem}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:3rem}
+.btn-hero{background:var(--ouro);color:var(--v);padding:.9rem 2.2rem;border-radius:3px;font-weight:700;font-size:.9rem;cursor:pointer;border:none;transition:all .2s}
+.btn-hero:hover{background:var(--ourol);transform:translateY(-2px)}
+.btn-hero-out{background:transparent;color:var(--branco);padding:.9rem 2.2rem;border-radius:3px;font-weight:500;font-size:.9rem;cursor:pointer;border:1px solid rgba(255,255,255,.3);transition:all .2s}
+.btn-hero-out:hover{border-color:var(--branco);background:rgba(255,255,255,.06)}
+.hero-stats{display:flex;gap:2.5rem}
+.hstat-num{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:700;color:var(--ouro);line-height:1}
+.hstat-label{font-size:.72rem;color:rgba(255,255,255,.45);margin-top:.2rem}
+.hero-panel{position:relative;z-index:1}
+.live-panel{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:1.5rem}
+.lp-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem}
+.lp-title{color:rgba(255,255,255,.45);font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.lp-live{display:flex;align-items:center;gap:.4rem;font-size:.7rem;color:#4ADE80}
+.lp-dot{width:6px;height:6px;background:#4ADE80;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.lp-row{display:flex;justify-content:space-between;align-items:center;padding:.65rem 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.lp-row:last-child{border-bottom:none}
+.lp-label{font-size:.78rem;color:rgba(255,255,255,.55)}
+.lp-val{font-size:.88rem;font-weight:600;color:var(--branco)}
+.lp-up{color:#4ADE80;font-size:.72rem;margin-left:.4rem}
+.lp-down{color:#F87171;font-size:.72rem;margin-left:.4rem}
+.lp-stable{background:rgba(212,160,23,.2);color:var(--ourol);font-size:.68rem;font-weight:600;padding:.2rem .5rem;border-radius:2px;margin-left:.4rem}
+.lp-footer{margin-top:1rem;padding-top:.75rem;border-top:1px solid rgba(255,255,255,.07);font-size:.7rem;color:rgba(255,255,255,.3);text-align:center}
+
+/* PARCEIROS */
+.parceiros-bar{background:var(--branco);padding:1rem 4rem;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;gap:2.5rem;flex-wrap:wrap}
+.parceiros-label{font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--cinzal);white-space:nowrap}
+.parceiro{font-size:.78rem;font-weight:700;color:#C4C9D4;letter-spacing:.04em;text-transform:uppercase}
+
+/* SECÇÕES */
+.sec{padding:5.5rem 4rem}
+.sec-label{font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ouro);margin-bottom:.75rem}
+.sec-title{font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:700;color:var(--v);line-height:1.2;margin-bottom:1rem}
+.sec-sub{color:var(--cinzal);font-size:1rem;line-height:1.85;max-width:580px}
+.sec-center{text-align:center}.sec-center .sec-sub{margin:0 auto}
+.bg-white{background:var(--branco)}.bg-marfim{background:var(--marfim)}.bg-v{background:var(--v)}.bg-vm{background:var(--vm)}
+
+/* MÓDULOS */
+.mod-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3.5rem}
+.mod-card{background:var(--branco);border:1px solid #E5E7EB;border-radius:8px;padding:1.75rem;transition:all .25s;cursor:default}
+.mod-card:hover{border-color:var(--vc);transform:translateY(-3px);box-shadow:0 8px 24px rgba(13,43,31,.08)}
+.mod-icon{width:48px;height:48px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem;font-size:1.4rem}
+.mod-title{font-weight:700;font-size:1rem;color:var(--v);margin-bottom:.5rem}
+.mod-desc{font-size:.85rem;color:var(--cinzal);line-height:1.7}
+
+/* STEPS */
+.steps{display:flex;align-items:flex-start;gap:0;margin-top:3.5rem;position:relative}
+.step{flex:1;text-align:center;padding:0 .5rem;position:relative}
+.step:not(:last-child)::after{content:'→';position:absolute;right:-10px;top:22px;font-size:1.1rem;color:var(--ouro);font-weight:700}
+.step-num{width:50px;height:50px;border-radius:50%;background:var(--vm);border:2px solid var(--ouro);color:var(--ouro);font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
+.step-ico{font-size:1.4rem;margin-bottom:.75rem}
+.step-title{font-weight:700;font-size:.85rem;color:var(--v);margin-bottom:.4rem}
+.step-desc{font-size:.75rem;color:var(--cinzal);line-height:1.6}
+
+/* MARKETPLACE */
+.mkt-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.mkt-screen{background:var(--v);border-radius:10px;padding:1.5rem;border:1px solid rgba(255,255,255,.1)}
+.mkt-bar{display:flex;align-items:center;gap:.5rem;margin-bottom:1.25rem}
+.mkt-dot{width:8px;height:8px;border-radius:50%}
+.mkt-section-label{font-size:.7rem;color:rgba(255,255,255,.35);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.75rem}
+.mkt-row{display:flex;justify-content:space-between;align-items:center;padding:.6rem .8rem;border-radius:5px;margin-bottom:.35rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07)}
+.mkt-prod{font-size:.78rem;color:rgba(255,255,255,.85);font-weight:500}
+.mkt-meta{font-size:.68rem;color:rgba(255,255,255,.35);margin-top:2px}
+.mkt-pval{font-size:.88rem;font-weight:700;color:var(--ourol)}
+.mkt-pstock{font-size:.66rem;color:#4ADE80}
+.mkt-footer{margin-top:1rem;padding-top:.75rem;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between}
+.mkt-fval{font-size:.95rem;font-weight:700;color:var(--ourol);text-align:center}
+.mkt-flabel{font-size:.65rem;color:rgba(255,255,255,.35);margin-top:2px;text-align:center}
+.serv-list{display:flex;flex-direction:column;gap:.65rem}
+.serv-item{background:var(--marfim);border-radius:6px;padding:.9rem 1rem;display:flex;align-items:flex-start;gap:.75rem;border:1px solid transparent;transition:border-color .2s}
+.serv-item:hover{border-color:#D1D5DB}
+.serv-check{width:20px;height:20px;background:var(--vc);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;color:#fff;font-size:.6rem;font-weight:800}
+.serv-nome{font-size:.87rem;font-weight:700;color:var(--v);margin-bottom:2px}
+.serv-det{font-size:.77rem;color:var(--cinzal);line-height:1.5}
+
+/* NICHOS */
+.nicho-tabs{display:flex;gap:0;border:1px solid #D1D5DB;border-radius:4px;overflow:hidden;width:fit-content;margin:0 auto 3.5rem}
+.nicho-tab{background:var(--branco);color:var(--cinza);padding:.65rem 1.35rem;border:none;cursor:pointer;font-size:.82rem;font-weight:500;transition:all .2s;border-right:1px solid #D1D5DB}
+.nicho-tab:last-child{border-right:none}
+.nicho-tab.active{background:var(--v);color:var(--branco)}
+.nicho-tab:hover:not(.active){background:var(--marfim);color:var(--v)}
+.nicho-panel{display:none;grid-template-columns:1fr 1fr;gap:3.5rem;align-items:start}
+.nicho-panel.active{display:grid;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.nicho-icon-big{width:58px;height:58px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.7rem;margin-bottom:1.5rem}
+.nicho-h3{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:var(--v);margin-bottom:.75rem}
+.nicho-desc{color:var(--cinzal);line-height:1.8;font-size:.95rem;margin-bottom:1.2rem}
+.nicho-prob{background:rgba(212,160,23,.08);border-left:3px solid var(--ouro);padding:.9rem 1.1rem;margin-bottom:1.5rem}
+.nicho-prob p{font-size:.82rem;color:var(--cinza);font-style:italic;line-height:1.65}
+.nicho-prob strong{color:#92610A;font-style:normal}
+.plano-pill{display:inline-block;background:rgba(13,43,31,.08);color:var(--vm);font-size:.7rem;font-weight:700;padding:.3rem .85rem;border-radius:2px;letter-spacing:.06em;text-transform:uppercase}
+
+/* KPIs */
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem}
+.kpi-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:2rem;text-align:center}
+.kpi-num{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:700;color:var(--ouro);line-height:1}
+.kpi-label{font-size:.82rem;color:rgba(255,255,255,.5);margin-top:.5rem;line-height:1.5}
+
+/* INCENTIVOS */
+.inc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem}
+.inc-card{background:var(--branco);border:1px solid #E5E7EB;border-radius:8px;padding:1.5rem}
+.inc-ico{font-size:1.4rem;margin-bottom:.75rem}
+.inc-title{font-weight:700;font-size:.95rem;color:var(--v);margin-bottom:.4rem}
+.inc-desc{font-size:.82rem;color:var(--cinzal);line-height:1.65}
+
+/* ECOSSISTEMA */
+.eco-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;margin-top:3rem}
+.eco-col{background:var(--branco);border:1px solid #E5E7EB;border-radius:8px;padding:1.25rem}
+.eco-col-title{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ouro);margin-bottom:1rem}
+.eco-item{font-size:.79rem;color:var(--cinza);padding:.35rem 0;border-bottom:1px solid #F3F4F6;display:flex;align-items:center;gap:.5rem}
+.eco-item:last-child{border-bottom:none}
+.eco-dot{width:5px;height:5px;background:var(--vc);border-radius:50%;flex-shrink:0}
+
+/* PREÇOS */
+.preco-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;margin-top:3.5rem}
+.preco-card{background:var(--branco);border:1px solid #E5E7EB;border-radius:8px;padding:1.75rem;position:relative}
+.preco-card.dest{border:2px solid var(--vc)}
+.preco-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--vc);color:#fff;font-size:.67rem;font-weight:700;padding:.3rem 1rem;border-radius:2px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.preco-nicho{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ouro);margin-bottom:.4rem}
+.preco-nome{font-weight:700;font-size:1.05rem;color:var(--v);margin-bottom:.25rem}
+.preco-val{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:700;color:var(--v);margin:.75rem 0 .25rem}
+.preco-val span{font-size:.82rem;font-weight:400;color:var(--cinzal)}
+.preco-desc{font-size:.77rem;color:var(--cinzal);line-height:1.6;margin-bottom:1.25rem}
+.preco-lista{list-style:none;display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.5rem}
+.preco-lista li{font-size:.77rem;color:var(--cinza);display:flex;align-items:flex-start;gap:.45rem}
+.preco-lista li::before{content:'✓';color:var(--vc);font-weight:700;flex-shrink:0;margin-top:1px}
+.btn-preco{width:100%;padding:.7rem;border-radius:3px;font-weight:600;font-size:.82rem;cursor:pointer;transition:all .2s}
+.btn-preco-out{background:transparent;color:var(--v);border:1px solid #D1D5DB}
+.btn-preco-out:hover{border-color:var(--v)}
+.btn-preco-fill{background:var(--vc);color:#fff;border:none}
+.btn-preco-fill:hover{background:var(--vl)}
+
+/* CONTACTO */
+.form-wrap{max-width:560px;margin:2.5rem auto 0}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:.75rem}
+.form-group{display:flex;flex-direction:column;gap:.35rem;margin-bottom:.75rem}
+.form-label{font-size:.77rem;font-weight:600;color:rgba(255,255,255,.7)}
+.form-input{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);border-radius:3px;padding:.75rem 1rem;color:#fff;font-size:.87rem;font-family:'Inter',sans-serif;width:100%;transition:border-color .2s}
+.form-input::placeholder{color:rgba(255,255,255,.3)}
+.form-input:focus{outline:none;border-color:var(--ouro)}
+select.form-input option{background:#1B4332;color:#fff}
+.btn-submit{background:var(--ouro);color:var(--v);padding:.9rem;border-radius:3px;font-weight:700;font-size:.92rem;cursor:pointer;border:none;width:100%;margin-top:.5rem;transition:all .2s}
+.btn-submit:hover{background:var(--ourol);transform:translateY(-1px)}
+.form-note{font-size:.7rem;color:rgba(255,255,255,.3);text-align:center;margin-top:.75rem;line-height:1.6}
+.form-note a{color:rgba(255,255,255,.5);text-decoration:underline;cursor:pointer}
+.form-note a:hover{color:var(--ourol)}
+
+/* FOOTER */
+footer{background:#06170E;padding:3rem 4rem 1.5rem}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:2.5rem}
+.footer-brand p{font-size:.8rem;color:rgba(255,255,255,.3);line-height:1.7;max-width:250px;margin-top:.65rem}
+.footer-col h4{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:1rem}
+.footer-col a{display:block;font-size:.79rem;color:rgba(255,255,255,.4);text-decoration:none;margin-bottom:.5rem;cursor:pointer;transition:color .2s}
+.footer-col a:hover{color:rgba(255,255,255,.8)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:1.25rem;display:flex;justify-content:space-between;align-items:center}
+.footer-copy{font-size:.73rem;color:rgba(255,255,255,.22)}
+.footer-legal{display:flex;gap:1.5rem}
+.footer-legal a{font-size:.73rem;color:rgba(255,255,255,.28);text-decoration:none;cursor:pointer;transition:color .2s}
+.footer-legal a:hover{color:rgba(255,255,255,.65)}
+
+/* PÁGINAS LEGAIS */
+.legal-wrap{background:var(--marfim);min-height:80vh}
+.legal-body{max-width:800px;margin:0 auto;padding:4rem 2rem 5rem}
+.legal-body h1{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--v);margin-bottom:.5rem}
+.legal-date{font-size:.8rem;color:var(--cinzal);margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid #E5E7EB}
+.legal-body h2{font-size:1rem;font-weight:700;color:var(--v);margin:2rem 0 .75rem}
+.legal-body p,.legal-body li{font-size:.9rem;color:var(--cinza);line-height:1.85;margin-bottom:.75rem}
+.legal-body ul,.legal-body ol{padding-left:1.5rem}
+.legal-body li{margin-bottom:.4rem}
+.btn-back{display:inline-flex;align-items:center;gap:.5rem;color:var(--vc);font-size:.85rem;font-weight:600;cursor:pointer;margin-bottom:2rem;background:none;border:none;padding:0}
+.btn-back:hover{color:var(--vm)}
+
+/* LOGIN */
+.login-wrap{min-height:80vh;display:flex;align-items:center;justify-content:center;padding:3rem 1rem;background:var(--marfim)}
+.login-card{background:var(--branco);border:1px solid #E5E7EB;border-radius:10px;padding:2.5rem;width:100%;max-width:400px}
+.login-logo{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--v);text-align:center;margin-bottom:.5rem}
+.login-logo span{color:var(--ouro)}
+.login-sub{font-size:.82rem;color:var(--cinzal);text-align:center;margin-bottom:2rem}
+.login-label{font-size:.77rem;font-weight:600;color:var(--cinza);display:block;margin-bottom:.35rem}
+.login-input{width:100%;background:var(--marfim);border:1px solid #D1D5DB;border-radius:3px;padding:.7rem .9rem;font-size:.87rem;font-family:'Inter',sans-serif;color:var(--v);margin-bottom:1rem;transition:border-color .2s}
+.login-input:focus{outline:none;border-color:var(--vc)}
+.btn-login-main{width:100%;background:var(--v);color:#fff;border:none;border-radius:3px;padding:.8rem;font-size:.9rem;font-weight:700;cursor:pointer;margin-bottom:1rem;transition:background .2s}
+.btn-login-main:hover{background:var(--vm)}
+.divider{text-align:center;font-size:.77rem;color:var(--cinzal);margin:1rem 0;position:relative}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:#E5E7EB}
+.divider::before{left:0}.divider::after{right:0}
+.btn-demo-login{width:100%;background:transparent;color:var(--vc);border:1px solid var(--vc);border-radius:3px;padding:.8rem;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-demo-login:hover{background:rgba(45,106,79,.06)}
+.login-note{margin-top:1.5rem;font-size:.73rem;color:var(--cinzal);text-align:center;line-height:1.7}
+.login-note a{color:var(--vc);cursor:pointer;text-decoration:underline}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--v);color:#fff;padding:1rem 1.5rem;border-radius:6px;border-left:4px solid var(--ouro);font-size:.85rem;transform:translateY(120px);opacity:0;transition:all .35s;z-index:9999;max-width:340px;line-height:1.5}
+.toast.show{transform:translateY(0);opacity:1}
+
+@media(max-width:900px){
+  nav{padding:0 1.5rem}.nav-links{display:none}
+  .hero{grid-template-columns:1fr;padding:3rem 1.5rem;min-height:auto}.hero-panel{display:none}.hero h1{font-size:2.2rem}
+  .sec{padding:3.5rem 1.5rem}
+  .mod-grid,.kpi-grid,.inc-grid{grid-template-columns:1fr 1fr}
+  .preco-grid,.eco-grid{grid-template-columns:1fr 1fr}
+  .nicho-panel.active{grid-template-columns:1fr}
+  .mkt-grid{grid-template-columns:1fr}
+  .steps{flex-direction:column;gap:1.5rem}.step::after{display:none}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .form-row{grid-template-columns:1fr}
+  .parceiros-bar{padding:1rem 1.5rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ====== PÁGINA PRINCIPAL ====== -->
+<div class="page active" id="page-home">
+<nav>
+  <div class="logo" onclick="goHome()">SIGE<span>NAPE</span></div>
+  <ul class="nav-links">
+    <li><a onclick="goHome()">Início</a></li>
+    <li><a onclick="goSec('modulos')">Plataforma</a></li>
+    <li><a onclick="goSec('nichos')">Soluções</a></li>
+    <li><a onclick="goSec('precos')">Preços</a></li>
+    <li><a onclick="goSec('marketplace')">Marketplace</a></li>
+    <li><a onclick="showPage('disclaimer')">Legal</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="btn-login" onclick="showPage('login')">Entrar</button>
+    <button class="btn-nav-cta" onclick="goSec('contacto')">Solicitar Demo</button>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-content">
+    <div class="eyebrow"><div class="eyebrow-dot"></div>Plataforma Nacional · Farm-to-Fork · Moçambique</div>
+    <h1>A cadeia alimentar sob <em>controlo total.</em></h1>
+    <p class="hero-sub">O SIGENAPE é a plataforma B2B SaaS que conecta produtores, transportadores, armazenistas, retalhistas, banca e governo numa única fonte de verdade — com preços em tempo real, rastreabilidade completa e inteligência de mercado para toda a cadeia alimentar moçambicana.</p>
+    <div class="hero-btns">
+      <button class="btn-hero" onclick="showPage('login')">Aceder à plataforma</button>
+      <button class="btn-hero-out" onclick="goSec('contacto')">Agendar demonstração</button>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-num">100K+</div><div class="hstat-label">Agentes no Ano 2</div></div>
+      <div class="hstat"><div class="hstat-num">≤10%</div><div class="hstat-label">Perdas pós-colheita</div></div>
+      <div class="hstat"><div class="hstat-num">30–90d</div><div class="hstat-label">Alerta precoce</div></div>
+      <div class="hstat"><div class="hstat-num">3×</div><div class="hstat-label">Acesso a crédito</div></div>
+    </div>
+  </div>
+  <div class="hero-panel">
+    <div class="live-panel">
+      <div class="lp-header">
+        <div class="lp-title">Preços em tempo real</div>
+        <div class="lp-live"><div class="lp-dot"></div>Em directo</div>
+      </div>
+      <div class="lp-row"><div class="lp-label">Milho Branco · Maputo</div><div><span class="lp-val">MZN 18,50/kg</span><span class="lp-up">▲ 2,1%</span></div></div>
+      <div class="lp-row"><div class="lp-label">Amendoim · Nampula</div><div><span class="lp-val">MZN 45,00/kg</span><span class="lp-up">▲ 0,8%</span></div></div>
+      <div class="lp-row"><div class="lp-label">Mandioca · Sofala</div><div><span class="lp-val">MZN 9,20/kg</span><span class="lp-down">▼ 1,2%</span></div></div>
+      <div class="lp-row"><div class="lp-label">Feijão Nhemba · Gaza</div><div><span class="lp-val">MZN 62,00/kg</span><span class="lp-up">▲ 3,5%</span></div></div>
+      <div class="lp-row"><div class="lp-label">Arroz Local · Zambézia</div><div><span class="lp-val">MZN 28,00/kg</span><span class="lp-stable">Estável</span></div></div>
+      <div class="lp-footer">Dados de 11 províncias · Rede SIGENAPE</div>
+    </div>
+  </div>
+</section>
+
+<div class="parceiros-bar">
+  <div class="parceiros-label">Parceiros e alinhamento estratégico</div>
+  <div class="parceiro">Banco Mundial</div>
+  <div class="parceiro">FAO</div>
+  <div class="parceiro">WFP</div>
+  <div class="parceiro">USAID</div>
+  <div class="parceiro">MASA</div>
+  <div class="parceiro">INE</div>
+  <div class="parceiro">M-Pesa</div>
+  <div class="parceiro">ISO 27001</div>
+  <div class="parceiro">GS1</div>
+</div>
+
+<!-- MÓDULOS -->
+<section class="sec bg-white" id="modulos">
+  <div class="sec-label">Plataforma tecnológica</div>
+  <h2 class="sec-title">Seis módulos. Uma plataforma.</h2>
+  <p class="sec-sub">Cada módulo resolve um problema concreto da cadeia alimentar. Juntos, formam a primeira torre de controlo alimentar integrada de África.</p>
+  <div class="mod-grid">
+    <div class="mod-card"><div class="mod-icon" style="background:#EAF3DE">📦</div><div class="mod-title">Monitorização de Stocks</div><div class="mod-desc">Rastreio em tempo real de armazéns, silos, supermercados e distribuidores em todo o país. Sem rupturas por falta de visibilidade.</div></div>
+    <div class="mod-card"><div class="mod-icon" style="background:#E6F1FB">🌦️</div><div class="mod-title">Dados Climáticos</div><div class="mod-desc">Integração com satélites e estações meteorológicas. Alertas precoces de seca, cheias e ciclones com 30 a 90 dias de antecedência.</div></div>
+    <div class="mod-card"><div class="mod-icon" style="background:#FAEEDA">🚛</div><div class="mod-title">Logística e Distribuição</div><div class="mod-desc">Optimização de rotas de transporte com GPS em tempo real. Reduz custos e perdas pós-colheita ao longo de toda a cadeia logística.</div></div>
+    <div class="mod-card"><div class="mod-icon" style="background:#FBEAF0">📈</div><div class="mod-title">Preços e Mercado</div><div class="mod-desc">Dashboard de preços actualizado em tempo real com alertas de volatilidade, análise de tendências e comparação entre regiões e mercados.</div></div>
+    <div class="mod-card"><div class="mod-icon" style="background:#FAECE7">🔔</div><div class="mod-title">Sistema de Alerta Precoce</div><div class="mod-desc">Algoritmos preditivos que identificam risco de escassez com semanas de antecedência. O Estado responde antes que a crise aconteça.</div></div>
+    <div class="mod-card"><div class="mod-icon" style="background:#E1F5EE">🏅</div><div class="mod-title">Certificação Digital</div><div class="mod-desc">Rastreabilidade farm-to-fork com certificação digital reconhecida para exportação, financiamento bancário e contratos internacionais.</div></div>
+  </div>
+</section>
+
+<!-- COMO FUNCIONA -->
+<section class="sec bg-marfim">
+  <div class="sec-center">
+    <div class="sec-label">Como funciona</div>
+    <h2 class="sec-title">Da lavra à mesa, cada etapa gera dados</h2>
+    <p class="sec-sub">O SIGENAPE transforma cada momento da cadeia alimentar em informação estruturada, auditável e accionável. Cada etapa gera dados. Os dados geram decisões.</p>
+  </div>
+  <div class="steps">
+    <div class="step"><div class="step-ico">🌱</div><div class="step-num">1</div><div class="step-title">Produtor</div><div class="step-desc">Registo digital de colheitas e stocks na lavra, com georreferenciação</div></div>
+    <div class="step"><div class="step-ico">🏭</div><div class="step-num">2</div><div class="step-title">Armazenagem</div><div class="step-desc">Monitorização de silos, câmaras e armazéns em tempo real</div></div>
+    <div class="step"><div class="step-ico">🚛</div><div class="step-num">3</div><div class="step-title">Transporte</div><div class="step-desc">Rastreio logístico GPS com manifesto digital e prova de entrega</div></div>
+    <div class="step"><div class="step-ico">🔬</div><div class="step-num">4</div><div class="step-title">Processamento</div><div class="step-desc">Controlo de qualidade, certificação e documentação de conformidade</div></div>
+    <div class="step"><div class="step-ico">🏪</div><div class="step-num">5</div><div class="step-title">Retalhista</div><div class="step-desc">Preços, disponibilidade e rastreabilidade no ponto de venda</div></div>
+    <div class="step"><div class="step-ico">👨‍👩‍👧</div><div class="step-num">6</div><div class="step-title">Consumidor</div><div class="step-desc">Produto seguro, rastreável e certificado via QR Code</div></div>
+  </div>
+</section>
+
+<!-- MARKETPLACE -->
+<section class="sec bg-white" id="marketplace">
+  <div class="mkt-grid">
+    <div>
+      <div class="sec-label">Marketplace B2B integrado</div>
+      <h2 class="sec-title">Compre e venda directamente. Sem intermediários.</h2>
+      <p class="sec-sub" style="margin-bottom:1.5rem">O marketplace do SIGENAPE conecta produtores, armazenistas e retalhistas numa plataforma transaccional única. Preços transparentes, stocks verificados e contratos digitais — tudo no mesmo lugar.</p>
+      <div class="serv-list">
+        <div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Preços de mercado em tempo real</div><div class="serv-det">Cotações por produto, região e qualidade — sem opacidade nem intermediários a encarecer</div></div></div>
+        <div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Disponibilidade verificada de stock</div><div class="serv-det">Só aparecem ofertas com stock rastreado e certificado pelo sistema SIGENAPE</div></div></div>
+        <div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Contratos e facturas digitais</div><div class="serv-det">Documentação gerada automaticamente e integrada com sistemas de contabilidade</div></div></div>
+        <div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Pagamento via M-Pesa e banca</div><div class="serv-det">Integração com carteiras móveis e sistemas bancários para liquidação imediata</div></div></div>
+      </div>
+    </div>
+    <div class="mkt-screen">
+      <div class="mkt-bar"><div class="mkt-dot" style="background:#FF5F57"></div><div class="mkt-dot" style="background:#FFBD2E"></div><div class="mkt-dot" style="background:#28CA41"></div><div style="font-size:.7rem;color:rgba(255,255,255,.3);margin-left:.5rem">marketplace.sigenape.mz</div></div>
+      <div class="mkt-section-label">Ofertas disponíveis agora</div>
+      <div class="mkt-row"><div><div class="mkt-prod">Milho Branco · Granel · 40t</div><div class="mkt-meta">Cooperativa Limpopo · Gaza · Cert. SIGENAPE</div></div><div style="text-align:right"><div class="mkt-pval">MZN 17,80/kg</div><div class="mkt-pstock">Stock: 40.000 kg</div></div></div>
+      <div class="mkt-row"><div><div class="mkt-prod">Amendoim Descascado · 15t</div><div class="mkt-meta">Agropecuária Nacala · Nampula · Cert. SIGENAPE</div></div><div style="text-align:right"><div class="mkt-pval">MZN 43,50/kg</div><div class="mkt-pstock">Stock: 15.200 kg</div></div></div>
+      <div class="mkt-row"><div><div class="mkt-prod">Feijão Nhemba · Saco 50kg</div><div class="mkt-meta">Prod. Unidos Zambézia · Cert. SIGENAPE</div></div><div style="text-align:right"><div class="mkt-pval">MZN 61,00/kg</div><div class="mkt-pstock">Stock: 8.500 kg</div></div></div>
+      <div class="mkt-row"><div><div class="mkt-prod">Mandioca Fresca · 20t</div><div class="mkt-meta">Coop. Agrícola Sofala · Beira · Cert. SIGENAPE</div></div><div style="text-align:right"><div class="mkt-pval">MZN 9,00/kg</div><div class="mkt-pstock">Stock: 20.000 kg</div></div></div>
+      <div class="mkt-footer">
+        <div><div class="mkt-fval">248</div><div class="mkt-flabel">Ofertas activas</div></div>
+        <div><div class="mkt-fval">11</div><div class="mkt-flabel">Províncias</div></div>
+        <div><div class="mkt-fval">34</div><div class="mkt-flabel">Produtos</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUÇÕES POR NICHO -->
+<section class="sec bg-marfim" id="nichos">
+  <div class="sec-center">
+    <div class="sec-label">Soluções por sector</div>
+    <h2 class="sec-title">Cada negócio tem o seu produto</h2>
+    <p class="sec-sub">Não existe uma solução genérica. O SIGENAPE é configurado para os desafios reais de cada sector da cadeia alimentar.</p>
+  </div>
+  <div style="height:2.5rem"></div>
+  <div class="nicho-tabs">
+    <button class="nicho-tab active" onclick="showNicho('agric',this)">Agricultores</button>
+    <button class="nicho-tab" onclick="showNicho('transp',this)">Transportadores</button>
+    <button class="nicho-tab" onclick="showNicho('armaz',this)">Armazenistas</button>
+    <button class="nicho-tab" onclick="showNicho('retail',this)">Retalhistas</button>
+    <button class="nicho-tab" onclick="showNicho('banca',this)">Banca</button>
+    <button class="nicho-tab" onclick="showNicho('gov',this)">Governo</button>
+  </div>
+
+  <div id="nicho-agric" class="nicho-panel active">
+    <div><div class="nicho-icon-big" style="background:#EAF3DE">🌱</div><h3 class="nicho-h3">Para Agricultores e Cooperativas</h3><p class="nicho-desc">Transforme a sua produção em dados auditáveis. Use esses dados para negociar melhores preços, aceder a crédito bancário e certificar a sua produção para mercados de exportação — sem precisar de intermediários.</p><div class="nicho-prob"><p><strong>O problema hoje:</strong> A produção sai do campo sem registo formal. Sem prova de volume, origem ou qualidade, o agricultor fica à mercê dos preços que o intermediário quiser impor.</p></div><div class="plano-pill">Plano Essencial · Plano Cooperativa</div></div>
+    <div class="serv-list"><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Registo digital de produção</div><div class="serv-det">Por lote, parcela e época, com georreferenciação e histórico consultável em qualquer momento</div></div></div><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Colateral digital para crédito bancário</div><div class="serv-det">Stock rastreado e certificado aceite como garantia por bancos parceiros do ecossistema SIGENAPE</div></div></div><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Certificação para exportação</div><div class="serv-det">Documentação farm-to-fork reconhecida para contratos com grandes cadeias e programas de compras públicas</div></div></div><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Acesso ao marketplace B2B</div><div class="serv-det">Venda directamente a armazenistas e retalhistas, com preços de mercado actualizados em tempo real</div></div></div><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Alertas climáticos personalizados</div><div class="serv-det">Avisos de seca, chuva e ciclones adaptados à sua região, com 30 a 90 dias de antecedência</div></div></div></div>
+  </div>
+
+  <div id="nicho-transp" class="nicho-panel">
+    <div><div class="nicho-icon-big" style="background:#FAEEDA">🚛</div><h3 class="nicho-h3">Para Transportadores e Operadores Logísticos</h3><p class="nicho-desc">Elimine disputas de entrega, prove cada movimento de carga e optimize a sua frota com dados reais. O seu negócio vale mais quando tem documentação digital irrefutável.</p><div class="nicho-prob"><p><strong>O problema hoje:</strong> Sem documentação digital, cada entrega pode tornar-se um conflito. A falta de prova formal cria prejuízos e destrói relações comerciais que levaram anos a construir.</p></div><div class="plano-pill">Plano Frota · Plano Enterprise</div></div>
+    <div class="serv-list"><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Manifesto digital de carga</div><div class="serv-det">QR Code por envio com todos os dados da carga, gerado automaticamente no momento do carregamento</div></div></div><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Prova de entrega com assinatura digital</div><div class="serv-det">Confirmação electrónica do receptor com timestamp e geolocalização — juridicamente irrefutável</div></div></div><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Rastreio GPS em tempo real</div><div class="serv-det">Percurso completo registado com alertas de desvio de rota e tempos de paragem</div></div></div><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Relatórios de desempenho por frota</div><div class="serv-det">Análise por rota, condutor e veículo — identifique ineficiências com dados reais e verificáveis</div></div></div><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Integração automática com clientes</div><div class="serv-det">Agricultores e armazenistas recebem actualizações em tempo real sobre o estado das suas cargas</div></div></div></div>
+  </div>
+
+  <div id="nicho-armaz" class="nicho-panel">
+    <div><div class="nicho-icon-big" style="background:#EEEDFE">🏭</div><h3 class="nicho-h3">Para Armazenistas e Operadores de Silos</h3><p class="nicho-desc">Saiba exactamente o que tem em stock, de onde veio e para onde vai. Com rastreabilidade de origem, os seus produtos tornam-se certificáveis para mercados e auditorias exigentes.</p><div class="nicho-prob"><p><strong>O problema hoje:</strong> O controlo manual gera perdas invisíveis. Sem rastreabilidade de origem, é impossível certificar para exportação ou responder a auditorias sem risco de exposição legal.</p></div><div class="plano-pill">Plano Armazém · Plano Multi-instalação</div></div>
+    <div class="serv-list"><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Inventário em tempo real</div><div class="serv-det">Dashboard actualizado por cada entrada e saída — sem reconciliações manuais no fim do dia</div></div></div><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Rastreabilidade completa de origem</div><div class="serv-det">Cada unidade de stock ligada ao produtor, data de colheita e percurso logístico completo</div></div></div><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Certificação digital de origem</div><div class="serv-det">Documento reconhecido para exportação, auditorias sanitárias e contratos com cadeias internacionais</div></div></div><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Alertas de validade e rotação</div><div class="serv-det">Notificações automáticas por proximidade de prazo ou produto parado em armazém demasiado tempo</div></div></div><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Ligação directa ao marketplace</div><div class="serv-det">Coloque o seu stock disponível no mercado com um clique, a preços actualizados automaticamente</div></div></div></div>
+  </div>
+
+  <div id="nicho-retail" class="nicho-panel">
+    <div><div class="nicho-icon-big" style="background:#FAECE7">🏪</div><h3 class="nicho-h3">Para Retalhistas e Distribuidores</h3><p class="nicho-desc">Num mercado com risco real de adulteração de produtos, a transparência de origem é uma vantagem competitiva. Ofereça ao cliente a certeza que a concorrência não consegue dar.</p><div class="nicho-prob"><p><strong>O problema hoje:</strong> Sem rastreabilidade, os retalhistas ficam expostos a produtos adulterados, litígios legais e danos reputacionais que podem destruir anos de trabalho em dias.</p></div><div class="plano-pill">Plano Loja · Plano Cadeia</div></div>
+    <div class="serv-list"><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Historial completo de cada produto</div><div class="serv-det">Acesso imediato a quem produziu, quando, como foi transportado e onde foi armazenado</div></div></div><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">QR Code de rastreabilidade</div><div class="serv-det">Etiqueta digital que qualquer consumidor escaneia para ver toda a cadeia de origem do produto</div></div></div><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Encomendas directas a fornecedores</div><div class="serv-det">Pedidos a produtores e armazenistas dentro da plataforma, com preços de mercado transparentes</div></div></div><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Documentação para inspecções</div><div class="serv-det">Relatórios de conformidade gerados automaticamente para autoridades sanitárias e auditores</div></div></div><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Gestão multi-ponto de venda</div><div class="serv-det">Para distribuidores com várias lojas — visão consolidada de toda a operação numa única plataforma</div></div></div></div>
+  </div>
+
+  <div id="nicho-banca" class="nicho-panel">
+    <div><div class="nicho-icon-big" style="background:#E6F1FB">🏦</div><h3 class="nicho-h3">Para Banca e Seguradoras</h3><p class="nicho-desc">Dados verificados de produção e movimentação eliminam a opacidade que torna o crédito agrícola um risco inaceitável. Com o SIGENAPE, o agricultor tem um historial digital que vale como garantia real.</p><div class="nicho-prob"><p><strong>O problema hoje:</strong> Pequenos agricultores e PMEs são excluídos do crédito por não terem garantias formais. O resultado é um mercado que não cresce porque não tem financiamento.</p></div><div class="plano-pill">Plano Financeiro · API Licenciada</div></div>
+    <div class="serv-list"><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Colateral digital verificado</div><div class="serv-det">Stock rastreado e certificado aceite como garantia, com actualização em tempo real do valor do activo</div></div></div><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Histórico de produção auditável</div><div class="serv-det">Dados de 12 a 36 meses de actividade por produtor, verificáveis e completamente independentes</div></div></div><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">API de consulta de rastreabilidade</div><div class="serv-det">Integração directa com sistemas bancários para validação de garantias em segundos, não dias</div></div></div><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Alertas de risco de colheita</div><div class="serv-det">Dados climáticos e preditivos que antecipam riscos de incumprimento antes que se materializem</div></div></div><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Relatórios de risco padronizados</div><div class="serv-det">Outputs prontos para análise de crédito agrícola, seguros e avaliação de carteiras</div></div></div></div>
+  </div>
+
+  <div id="nicho-gov" class="nicho-panel">
+    <div><div class="nicho-icon-big" style="background:#E1F5EE">🏛️</div><h3 class="nicho-h3">Para o Governo e Reguladores</h3><p class="nicho-desc">Moçambique passa a ter dados próprios, nacionais e em tempo real sobre o estado alimentar do país. Decisões de política pública baseadas em evidência — não em estimativas de organizações externas.</p><div class="nicho-prob"><p><strong>O problema hoje:</strong> O Estado depende de organizações internacionais para conhecer o seu próprio estado alimentar. As crises alimentares são detectadas quando já são emergências, não antes.</p></div><div class="plano-pill">Licença Governamental · Dashboard Nacional</div></div>
+    <div class="serv-list"><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Soberania analítica nacional</div><div class="serv-det">Dados próprios sobre produção, stocks, preços e logística em tempo real — sem dependência externa</div></div></div><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Alerta precoce de crises alimentares</div><div class="serv-det">Identificação de risco de escassez com 30 a 90 dias de antecedência para resposta preventiva</div></div></div><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Políticas baseadas em dados reais</div><div class="serv-det">Subsídios, importações de emergência e ajuda humanitária optimizados por dados verificados</div></div></div><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Credibilidade junto a doadores internacionais</div><div class="serv-det">Dados de qualidade aumentam a capacidade de negociação com Banco Mundial, FAO e WFP</div></div></div><div class="serv-item"><div class="serv-check">✓</div><div><div class="serv-nome">Alinhamento com Agenda 2063 e ODS</div><div class="serv-det">Contribuição directa para ODS 2 (Fome Zero) e para os objectivos de soberania alimentar da União Africana</div></div></div></div>
+  </div>
+</section>
+
+<!-- INCENTIVOS -->
+<section class="sec bg-white">
+  <div class="sec-center">
+    <div class="sec-label">Porquê aderir agora</div>
+    <h2 class="sec-title">Vantagens concretas para quem entra primeiro</h2>
+    <p class="sec-sub">A adopção precoce tem incentivos reais e mensuráveis. As posições de vantagem na plataforma são limitadas.</p>
+  </div>
+  <div class="inc-grid">
+    <div class="inc-card"><div class="inc-ico">🏆</div><div class="inc-title">Posicionamento prioritário no Marketplace</div><div class="inc-desc">Os primeiros subscritores têm destaque garantido nas listagens do marketplace durante os primeiros 12 meses de operação comercial plena.</div></div>
+    <div class="inc-card"><div class="inc-ico">💳</div><div class="inc-title">Acesso a crédito bancário desbloqueado</div><div class="inc-desc">Agricultores e PMEs subscritores têm stock certificado aceite como colateral por bancos parceiros. Crédito que antes era inacessível torna-se disponível.</div></div>
+    <div class="inc-card"><div class="inc-ico">📜</div><div class="inc-title">Certificação gratuita no primeiro ano</div><div class="inc-desc">Subscritores que entrem na fase de lançamento recebem os primeiros certificados digitais de rastreabilidade sem qualquer custo adicional.</div></div>
+    <div class="inc-card"><div class="inc-ico">📊</div><div class="inc-title">Inteligência de mercado exclusiva</div><div class="inc-desc">Acesso a relatórios de preços, tendências de consumo e análise competitiva que só a rede SIGENAPE consegue produzir com dados reais de todo o país.</div></div>
+    <div class="inc-card"><div class="inc-ico">🌍</div><div class="inc-title">Acesso a mercados de exportação</div><div class="inc-desc">A certificação digital SIGENAPE é o passaporte para contratos com grandes cadeias retalhistas regionais e programas de compras internacionais.</div></div>
+    <div class="inc-card"><div class="inc-ico">⚙️</div><div class="inc-title">Onboarding assistido sem custo</div><div class="inc-desc">A equipa SIGENAPE faz a integração da sua operação na plataforma de forma presencial ou remota, sem custos de implementação adicionais.</div></div>
+  </div>
+</section>
+
+<!-- KPIs -->
+<section class="sec bg-v">
+  <div class="sec-center">
+    <div class="sec-label" style="color:rgba(212,160,23,.75)">Resultados mensuráveis</div>
+    <h2 class="sec-title" style="color:#fff">O que o SIGENAPE mede e entrega</h2>
+    <p class="sec-sub" style="color:rgba(255,255,255,.5);margin:0 auto">Cada indicador tem uma meta definida e é acompanhado em tempo real. Sem ambiguidade sobre o que constitui sucesso.</p>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi-card"><div class="kpi-num">≥80%</div><div class="kpi-label">dos armazéns formais registados no sistema no Ano 1</div></div>
+    <div class="kpi-card"><div class="kpi-num">≤10%</div><div class="kpi-label">perdas pós-colheita na cadeia monitorizada (vs. 30% actual)</div></div>
+    <div class="kpi-card"><div class="kpi-num">30–90d</div><div class="kpi-label">antecedência nos alertas de risco alimentar</div></div>
+    <div class="kpi-card"><div class="kpi-num">100K+</div><div class="kpi-label">agentes económicos activos na plataforma no Ano 2</div></div>
+    <div class="kpi-card"><div class="kpi-num">&lt;48h</div><div class="kpi-label">tempo de resposta do Estado a alertas de escassez</div></div>
+    <div class="kpi-card"><div class="kpi-num">3×</div><div class="kpi-label">aumento do acesso a crédito bancário para agricultores</div></div>
+  </div>
+</section>
+
+<!-- ECOSSISTEMA -->
+<section class="sec bg-white">
+  <div class="sec-center">
+    <div class="sec-label">Ecossistema de parceiros</div>
+    <h2 class="sec-title">Uma rede que já está construída</h2>
+    <p class="sec-sub">O SIGENAPE não é uma plataforma isolada. Está integrado num ecossistema de parceiros institucionais, tecnológicos e financeiros com alcance nacional e internacional.</p>
+  </div>
+  <div class="eco-grid">
+    <div class="eco-col"><div class="eco-col-title">Governo e Regulação</div><div class="eco-item"><div class="eco-dot"></div>MASA — Min. Agricultura</div><div class="eco-item"><div class="eco-dot"></div>INE — Estatística Nacional</div><div class="eco-item"><div class="eco-dot"></div>Alfândegas de Moçambique</div><div class="eco-item"><div class="eco-dot"></div>Bolsa de Valores (BVM)</div></div>
+    <div class="eco-col"><div class="eco-col-title">Organizações Internacionais</div><div class="eco-item"><div class="eco-dot"></div>Banco Mundial (SUSTENTA+)</div><div class="eco-item"><div class="eco-dot"></div>FAO</div><div class="eco-item"><div class="eco-dot"></div>WFP — Prog. Alimentar Mundial</div><div class="eco-item"><div class="eco-dot"></div>USAID Feed the Future</div></div>
+    <div class="eco-col"><div class="eco-col-title">Tecnologia e Know-how</div><div class="eco-item"><div class="eco-dot"></div>Cloud Azure / AWS</div><div class="eco-item"><div class="eco-dot"></div>GIS e sensores IoT</div><div class="eco-item"><div class="eco-dot"></div>Cibersegurança ISO 27001</div><div class="eco-item"><div class="eco-dot"></div>Operadores de telecomunicações</div></div>
+    <div class="eco-col"><div class="eco-col-title">Sector Financeiro</div><div class="eco-item"><div class="eco-dot"></div>Bancos comerciais parceiros</div><div class="eco-item"><div class="eco-dot"></div>Seguradoras agrícolas</div><div class="eco-item"><div class="eco-dot"></div>Fundos de investimento AgriTech</div><div class="eco-item"><div class="eco-dot"></div>M-Pesa e pagamentos móveis</div></div>
+  </div>
+</section>
+
+<!-- PREÇOS -->
+<section class="sec bg-marfim" id="precos">
+  <div class="sec-center">
+    <div class="sec-label">Planos e preços</div>
+    <h2 class="sec-title">Subscrição mensal. Sem surpresas.</h2>
+    <p class="sec-sub">Todos os planos incluem onboarding assistido, suporte dedicado e acesso ao marketplace. Sem investimento inicial em infra-estrutura. Começa a trabalhar no primeiro dia.</p>
+  </div>
+  <div class="preco-grid">
+    <div class="preco-card"><div class="preco-nicho">Agricultor / PME</div><div class="preco-nome">Essencial</div><div class="preco-val">USD 15<span>/mês</span></div><div class="preco-desc">Para pequenos produtores e cooperativas que querem rastreabilidade e acesso ao mercado digital.</div><ul class="preco-lista"><li>Registo digital de produção</li><li>Acesso ao marketplace B2B</li><li>Certificação básica de origem</li><li>Alertas climáticos</li><li>Suporte via WhatsApp</li></ul><button class="btn-preco btn-preco-out" onclick="showPage('login')">Começar agora</button></div>
+    <div class="preco-card dest"><div class="preco-badge">Mais popular</div><div class="preco-nicho">Armazenista / Distribuidor</div><div class="preco-nome">Profissional</div><div class="preco-val">USD 95<span>/mês</span></div><div class="preco-desc">Para armazenistas, distribuidores e transportadores com operação em múltiplos pontos.</div><ul class="preco-lista"><li>Tudo do plano Essencial</li><li>Gestão de stock em tempo real</li><li>Manifesto e rastreio GPS</li><li>Certificação digital completa</li><li>Relatórios de desempenho</li><li>Integração com sistemas externos</li><li>Suporte prioritário</li></ul><button class="btn-preco btn-preco-fill" onclick="showPage('login')">Começar agora</button></div>
+    <div class="preco-card"><div class="preco-nicho">Retalhista / Cadeia</div><div class="preco-nome">Empresarial</div><div class="preco-val">USD 250<span>/mês</span></div><div class="preco-desc">Para retalhistas com múltiplos pontos de venda e distribuidores regionais com operação complexa.</div><ul class="preco-lista"><li>Tudo do plano Profissional</li><li>QR rastreabilidade ao consumidor</li><li>Gestão multi-ponto centralizada</li><li>API de integração com ERP</li><li>Intelligence de mercado mensal</li><li>Gestor de conta dedicado</li></ul><button class="btn-preco btn-preco-out" onclick="showPage('login')">Começar agora</button></div>
+    <div class="preco-card"><div class="preco-nicho">Banca / Governo</div><div class="preco-nome">Enterprise</div><div class="preco-val">Sob consulta</div><div class="preco-desc">Para instituições financeiras, governo e organizações internacionais com necessidades específicas.</div><ul class="preco-lista"><li>Dashboard governamental nacional</li><li>API de rastreabilidade licenciada</li><li>Analytics e relatórios premium</li><li>Integração com sistemas nacionais</li><li>SLA garantido e ISO 27001</li><li>Alojamento soberano de dados</li><li>Suporte 24/7 dedicado</li></ul><button class="btn-preco btn-preco-out" onclick="goSec('contacto')">Falar com a equipa</button></div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section class="sec bg-vm" id="contacto">
+  <div class="sec-center">
+    <div class="sec-label" style="color:rgba(212,160,23,.75)">Contacto</div>
+    <h2 class="sec-title" style="color:#fff">Comece com uma demonstração gratuita</h2>
+    <p class="sec-sub" style="color:rgba(255,255,255,.5);margin:0 auto">Mostre-nos a sua operação. Em 30 minutos explicamos como o SIGENAPE se integra no seu negócio, sem compromisso e sem letra pequena.</p>
+  </div>
+  <div class="form-wrap">
+    <div class="form-row"><div class="form-group"><label class="form-label">Nome completo</label><input class="form-input" type="text" placeholder="O seu nome"></div><div class="form-group"><label class="form-label">Empresa / Organização</label><input class="form-input" type="text" placeholder="Nome da empresa"></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Email profissional</label><input class="form-input" type="email" placeholder="email@empresa.mz"></div><div class="form-group"><label class="form-label">Telefone / WhatsApp</label><input class="form-input" type="tel" placeholder="+258 8X XXX XXXX"></div></div>
+    <div class="form-group"><label class="form-label">Sector da sua organização</label><select class="form-input"><option value="" disabled selected>Seleccionar sector</option><option>Agricultor / Cooperativa Agrícola</option><option>Transportador / Operador Logístico</option><option>Armazenista / Operador de Silos</option><option>Retalhista / Distribuidor</option><option>Banco / Seguradora</option><option>Governo / Entidade Pública</option><option>Organização Internacional</option><option>Outro</option></select></div>
+    <div class="form-group"><label class="form-label">Como podemos ajudar?</label><textarea class="form-input" rows="3" placeholder="Descreva brevemente a sua operação e o que pretende alcançar..."></textarea></div>
+    <button class="btn-submit" onclick="showToast()">Solicitar demonstração gratuita</button>
+    <div class="form-note">Ao submeter, aceita os <a onclick="showPage('termos')">Termos de Utilização</a> e o <a onclick="showPage('disclaimer')">Aviso Legal</a>. Os seus dados não serão partilhados com terceiros.</div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand"><div class="logo" onclick="goHome()">SIGE<span>NAPE</span></div><p>A primeira torre de controlo alimentar integrada de África. Conectamos toda a cadeia agrícola num único ecossistema digital, em tempo real, farm-to-fork.</p></div>
+    <div class="footer-col"><h4>Plataforma</h4><a onclick="goSec('modulos')">Módulos</a><a onclick="goSec('marketplace')">Marketplace</a><a onclick="goSec('nichos')">Soluções</a><a onclick="goSec('precos')">Preços</a></div>
+    <div class="footer-col"><h4>Empresa</h4><a href="#">Sobre o SIGENAPE</a><a href="#">Parceiros</a><a href="#">Imprensa</a><a onclick="goSec('contacto')">Contacto</a></div>
+    <div class="footer-col"><h4>Legal</h4><a onclick="showPage('termos')">Termos de Utilização</a><a onclick="showPage('disclaimer')">Aviso Legal</a><a href="#">Política de Privacidade</a><a href="#">Cookies</a></div>
+  </div>
+  <div class="footer-bottom"><div class="footer-copy">© 2025 SIGENAPE · CTS — Consultoria e Tecnologia de Sistemas, Lda. · Maputo, Moçambique</div><div class="footer-legal"><a onclick="showPage('termos')">Termos</a><a onclick="showPage('disclaimer')">Aviso Legal</a><a href="#">Privacidade</a></div></div>
+</footer>
+</div>
+
+<!-- ====== PÁGINA: TERMOS ====== -->
+<div class="page" id="page-termos">
+<nav><div class="logo" onclick="showPage('home')">SIGE<span>NAPE</span></div><ul class="nav-links"><li><a onclick="showPage('home')">Início</a></li><li><a onclick="showPage('disclaimer')">Aviso Legal</a></li></ul><div class="nav-right"><button class="btn-login" onclick="showPage('login')">Entrar</button><button class="btn-nav-cta" onclick="showPage('home');setTimeout(()=>goSec('contacto'),80)">Solicitar Demo</button></div></nav>
+<div class="legal-wrap"><div class="legal-body">
+  <button class="btn-back" onclick="showPage('home')">← Voltar ao início</button>
+  <h1>Termos e Condições de Utilização</h1>
+  <div class="legal-date">Última actualização: Janeiro de 2025 · Versão 1.0 · SIGENAPE / CTS, Lda.</div>
+  <h2>1. Aceitação dos Termos</h2>
+  <p>Ao aceder, registar-se ou utilizar a plataforma SIGENAPE, seja através do website, da aplicação móvel ou de qualquer interface disponibilizada pela CTS — Consultoria e Tecnologia de Sistemas, Lda. (doravante «SIGENAPE» ou «a Plataforma»), o utilizador declara ter lido, compreendido e aceite integralmente os presentes Termos e Condições de Utilização. Caso não concorde com qualquer disposição destes Termos, deverá abster-se de utilizar a Plataforma.</p>
+  <h2>2. Definições</h2>
+  <ul><li><strong>Plataforma:</strong> Conjunto de serviços digitais SIGENAPE, incluindo website, dashboards, marketplace, módulos de rastreabilidade, APIs e aplicações móveis.</li><li><strong>Subscritor:</strong> Qualquer pessoa singular ou colectiva que tenha efectuado registo e subscrição de um plano SIGENAPE.</li><li><strong>Dados de Rastreabilidade:</strong> Informação gerada pelo Subscritor sobre produção, stocks, transporte e transacções.</li><li><strong>Conteúdo de Mercado:</strong> Preços, cotações, análises e relatórios disponibilizados pela Plataforma com base em dados agregados da rede SIGENAPE.</li></ul>
+  <h2>3. Acesso e Registo</h2>
+  <p>O acesso completo à Plataforma, incluindo dashboards de preços, marketplace B2B e módulos de rastreabilidade, está reservado a Subscritores registados com plano activo. O Subscritor compromete-se a fornecer informação verdadeira, actual e completa no momento do registo e a mantê-la actualizada. O registo com informações falsas pode resultar em suspensão imediata, sem reembolso das quantias pagas. As credenciais de acesso são pessoais e intransmissíveis.</p>
+  <h2>4. Planos de Subscrição e Pagamentos</h2>
+  <p>A Plataforma está disponível mediante subscrição mensal ou anual. Os valores estão indicados em dólares americanos (USD) e sujeitos a IVA aplicável conforme a legislação moçambicana em vigor. A falta de pagamento na data de vencimento resulta na suspensão do acesso após 7 dias de aviso prévio. O SIGENAPE reserva-se o direito de alterar os preços com aviso prévio de 30 dias.</p>
+  <h2>5. Utilizações Permitidas e Proibidas</h2>
+  <p>O Subscritor pode utilizar a Plataforma para fins comerciais legítimos relacionados com as suas actividades na cadeia alimentar. É expressamente proibido:</p>
+  <ul><li>Introduzir dados falsos, fabricados ou enganosos na Plataforma;</li><li>Tentar aceder a dados de outros Subscritores sem autorização;</li><li>Utilizar a Plataforma para fins ilegais, incluindo fraude ou lavagem de capitais;</li><li>Revender ou sublicenciar o acesso à Plataforma sem autorização escrita;</li><li>Efectuar engenharia inversa ou copiar o software da Plataforma;</li><li>Utilizar mecanismos automatizados para extrair dados sem autorização expressa;</li><li>Publicar no marketplace produtos que não existem ou stock com informação enganosa.</li></ul>
+  <h2>6. Dados e Privacidade</h2>
+  <p>Os Dados de Rastreabilidade introduzidos pelo Subscritor pertencem ao Subscritor. O SIGENAPE utiliza esses dados exclusivamente para prestação do serviço e, de forma agregada e anonimizada, para produção de estatísticas de mercado. O SIGENAPE não vende dados individuais de Subscritores a terceiros. Os dados são alojados em servidores com certificação ISO 27001.</p>
+  <h2>7. Propriedade Intelectual</h2>
+  <p>Todos os direitos de propriedade intelectual sobre a Plataforma, design, arquitectura, código-fonte, algoritmos, marca e conteúdos produzidos pelo SIGENAPE pertencem exclusivamente à CTS — Consultoria e Tecnologia de Sistemas, Lda. A subscrição não confere qualquer direito de propriedade sobre a Plataforma.</p>
+  <h2>8. Limitação de Responsabilidade</h2>
+  <p>Os dados de preços e mercado têm carácter informativo. O SIGENAPE não garante a exactidão absoluta dos dados nem é responsável por decisões comerciais ou financeiras tomadas com base nos mesmos. Em situações de indisponibilidade superior a 72 horas consecutivas imputável ao SIGENAPE, o Subscritor tem direito a crédito proporcional.</p>
+  <h2>9. Resolução de Conflitos</h2>
+  <p>Os presentes Termos são regidos pela lei moçambicana. Qualquer litígio será submetido aos tribunais competentes da cidade de Maputo, com renúncia expressa a qualquer outro foro.</p>
+  <h2>10. Contacto</h2>
+  <p>Para questões relacionadas com estes Termos: <strong>legal@sigenape.mz</strong></p>
+</div></div>
+<footer style="background:#06170E;padding:1.5rem 4rem;display:flex;justify-content:space-between;align-items:center"><div class="logo" onclick="showPage('home')">SIGE<span>NAPE</span></div><div class="footer-copy">© 2025 SIGENAPE · CTS, Lda. · Maputo, Moçambique</div></footer>
+</div>
+
+<!-- ====== PÁGINA: DISCLAIMER ====== -->
+<div class="page" id="page-disclaimer">
+<nav><div class="logo" onclick="showPage('home')">SIGE<span>NAPE</span></div><ul class="nav-links"><li><a onclick="showPage('home')">Início</a></li><li><a onclick="showPage('termos')">Termos</a></li></ul><div class="nav-right"><button class="btn-login" onclick="showPage('login')">Entrar</button><button class="btn-nav-cta" onclick="showPage('home');setTimeout(()=>goSec('contacto'),80)">Solicitar Demo</button></div></nav>
+<div class="legal-wrap"><div class="legal-body">
+  <button class="btn-back" onclick="showPage('home')">← Voltar ao início</button>
+  <h1>Aviso Legal e Declaração de Exoneração de Responsabilidade</h1>
+  <div class="legal-date">Última actualização: Janeiro de 2025 · Versão 1.0 · SIGENAPE / CTS, Lda.</div>
+  <h2>1. Identificação da Entidade</h2>
+  <p>O website e a plataforma SIGENAPE são propriedade e operados pela CTS — Consultoria e Tecnologia de Sistemas, Lda., empresa constituída ao abrigo da legislação moçambicana, com sede em Maputo, Moçambique.</p>
+  <h2>2. Natureza Informativa dos Dados de Mercado</h2>
+  <p>Os preços, cotações, dados de disponibilidade de stocks e análises de mercado disponibilizados pela Plataforma têm carácter exclusivamente informativo. São produzidos com base em dados recolhidos da rede de Subscritores e de fontes parceiras, sendo processados e actualizados automaticamente.</p>
+  <p>O SIGENAPE não garante que os dados reflictam com absoluta precisão as condições de mercado em qualquer momento específico. <strong>Nenhum dado disponibilizado pela Plataforma constitui conselho financeiro, de investimento ou comercial.</strong> As decisões tomadas com base nos dados da Plataforma são da exclusiva responsabilidade do utilizador.</p>
+  <h2>3. Exactidão e Actualidade da Informação</h2>
+  <p>O SIGENAPE empreende todos os esforços razoáveis para garantir a exactidão e actualidade da informação disponibilizada. No entanto, não pode garantir a ausência de erros, omissões ou atrasos na actualização dos dados, em particular em situações de conectividade limitada em zonas rurais ou falhas técnicas de terceiros fornecedores de dados.</p>
+  <h2>4. Certificação Digital e Rastreabilidade</h2>
+  <p>Os certificados digitais de rastreabilidade emitidos pelo SIGENAPE baseiam-se nos dados introduzidos pelos Subscritores. A validade e reconhecimento desses certificados para efeitos de exportação, financiamento ou outros fins dependem das exigências específicas de cada comprador, mercado ou instituição, não sendo garantidos pelo SIGENAPE.</p>
+  <h2>5. Marketplace e Transacções Comerciais</h2>
+  <p>O SIGENAPE actua como intermediário tecnológico no marketplace B2B. O SIGENAPE não é parte nas transacções comerciais efectuadas entre Subscritores, não assumindo responsabilidade pela qualidade dos produtos transaccionados, pelo cumprimento dos contratos entre partes ou por litígios comerciais deles resultantes.</p>
+  <h2>6. Crédito Bancário e Colateral Digital</h2>
+  <p>As referências ao uso de dados SIGENAPE como colateral para acesso a crédito descrevem funcionalidades em desenvolvimento e acordos com instituições financeiras parceiras. A concessão de crédito é decisão exclusiva de cada instituição financeira. O SIGENAPE não garante nem é responsável pela aprovação de qualquer pedido de crédito.</p>
+  <h2>7. Disponibilidade do Serviço</h2>
+  <p>O SIGENAPE não garante a disponibilidade ininterrupta da Plataforma. Podem ocorrer períodos de manutenção ou indisponibilidade por causas técnicas ou de força maior. Em situações de indisponibilidade prolongada imputável ao SIGENAPE, aplicam-se as disposições dos Termos e Condições de Utilização.</p>
+  <h2>8. Legislação Aplicável</h2>
+  <p>O presente Aviso Legal é regido pela lei da República de Moçambique. Qualquer litígio será submetido à jurisdição exclusiva dos tribunais de Maputo.</p>
+  <h2>9. Contacto para Questões Legais</h2>
+  <p>Para questões relacionadas com este Aviso Legal: <strong>legal@sigenape.mz</strong></p>
+</div></div>
+<footer style="background:#06170E;padding:1.5rem 4rem;display:flex;justify-content:space-between;align-items:center"><div class="logo" onclick="showPage('home')">SIGE<span>NAPE</span></div><div class="footer-copy">© 2025 SIGENAPE · CTS, Lda. · Maputo, Moçambique</div></footer>
+</div>
+
+<!-- ====== PÁGINA: LOGIN ====== -->
+<div class="page" id="page-login">
+<nav><div class="logo" onclick="showPage('home')">SIGE<span>NAPE</span></div><ul class="nav-links"><li><a onclick="showPage('home')">Início</a></li></ul><div class="nav-right"><button class="btn-nav-cta" onclick="showPage('home');setTimeout(()=>goSec('contacto'),80)">Solicitar Demo</button></div></nav>
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">SIGE<span>NAPE</span></div>
+    <div class="login-sub">Aceda à sua conta de subscritor ou solicite acesso de demonstração</div>
+    <label class="login-label">Email profissional</label>
+    <input class="login-input" type="email" placeholder="email@empresa.mz">
+    <label class="login-label">Palavra-passe</label>
+    <input class="login-input" type="password" placeholder="••••••••">
+    <button class="btn-login-main" onclick="showToast()">Entrar na plataforma</button>
+    <div class="divider">ou</div>
+    <button class="btn-demo-login" onclick="showPage('home');setTimeout(()=>goSec('contacto'),80)">Solicitar acesso de demonstração gratuita</button>
+    <div class="login-note">Ainda não tem conta? <a onclick="showPage('home');setTimeout(()=>goSec('precos'),80)">Ver planos e preços</a><br>Ao entrar aceita os <a onclick="showPage('termos')">Termos de Utilização</a> e o <a onclick="showPage('disclaimer')">Aviso Legal</a></div>
+  </div>
+</div>
+<footer style="background:#06170E;padding:1.5rem 4rem;display:flex;justify-content:space-between;align-items:center"><div class="logo" onclick="showPage('home')">SIGE<span>NAPE</span></div><div class="footer-copy">© 2025 SIGENAPE · CTS, Lda. · Maputo, Moçambique</div></footer>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✓ &nbsp;Mensagem enviada com sucesso. A nossa equipa entrará em contacto dentro de 48 horas.</div>
+
+<script>
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function goHome(){showPage('home')}
+function goSec(id){
+  showPage('home');
+  setTimeout(()=>{
+    const el=document.getElementById(id);
+    if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+  },60);
+}
+function showNicho(id,btn){
+  document.querySelectorAll('.nicho-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nicho-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('nicho-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+function showToast(){
+  const t=document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),4500);
+}
+</script>
+</body>
+</html>
